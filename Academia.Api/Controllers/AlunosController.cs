@@ -9,12 +9,12 @@ namespace Academia.Api.Controllers
     [Route("api/[controller]")]
     [Authorize]
     public class AlunosController : ControllerBase
+    {
+        private readonly IAlunoService _alunoService;
+        public AlunosController(IAlunoService alunoService)
         {
-            private readonly IAlunoService _alunoService;
-            public AlunosController(IAlunoService alunoService)
-            {
-                _alunoService = alunoService;
-            }
+            _alunoService = alunoService;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAlunos()

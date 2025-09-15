@@ -8,10 +8,10 @@ namespace Academia.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-        public class PresencasController : ControllerBase
+    public class PresencasController : ControllerBase
     {
-            private readonly IPresencaService _presencaService;
-            public PresencasController(IPresencaService presencaService)
+        private readonly IPresencaService _presencaService;
+        public PresencasController(IPresencaService presencaService)
         {
             _presencaService = presencaService;
         }

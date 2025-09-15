@@ -7,12 +7,12 @@ namespace Academia.Infrastructure.Data
     {
         public AcademiaDbContext(DbContextOptions<AcademiaDbContext> options) : base(options) { }
 
-    public DbSet<Aluno> Alunos { get; set; }
-    public DbSet<Plano> Planos { get; set; }
-    public DbSet<Presenca> Presencas { get; set; }
-    public DbSet<Usuario> Usuarios { get; set; }
-    public DbSet<Permissao> Permissoes { get; set; }
-    public DbSet<UsuarioPermissao> UsuariosPermissoes { get; set; }
+        public DbSet<Aluno> Alunos { get; set; }
+        public DbSet<Plano> Planos { get; set; }
+        public DbSet<Presenca> Presencas { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Permissao> Permissoes { get; set; }
+        public DbSet<UsuarioPermissao> UsuariosPermissoes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

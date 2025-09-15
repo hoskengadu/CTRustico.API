@@ -8,18 +8,18 @@ namespace Academia.Api.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
-        {
-            private readonly IAuthService _authService;
-            private readonly IUsuarioService _usuarioService;
+    {
+        private readonly IAuthService _authService;
+        private readonly IUsuarioService _usuarioService;
 
-            public AuthController(IAuthService authService, IUsuarioService usuarioService)
-            {
-                _authService = authService;
-                _usuarioService = usuarioService;
+        public AuthController(IAuthService authService, IUsuarioService usuarioService)
+        {
+            _authService = authService;
+            _usuarioService = usuarioService;
         }
 
         [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _authService.AuthenticateAsync(request.Email, request.Password);
             if (user == null)
