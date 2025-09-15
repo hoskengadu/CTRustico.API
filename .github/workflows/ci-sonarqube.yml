@@ -32,6 +32,9 @@ jobs:
       - name: Build
         run: dotnet build Academia.Api/Academia.Api.csproj --configuration Release --no-restore
 
+      - name: Install coverlet collector
+        run: dotnet add Academia.Tests/Academia.Tests.csproj package coverlet.collector
+
       - name: Run tests with coverage
         run: dotnet test Academia.Tests/Academia.Tests.csproj --configuration Release --collect:"XPlat Code Coverage"
 
