@@ -33,7 +33,7 @@ jobs:
         run: dotnet build Academia.Api/Academia.Api.csproj --configuration Release --no-restore
 
       - name: Run tests with coverage
-        run: dotnet test Academia.Tests/Academia.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
+        run: dotnet test Academia.Tests/Academia.Tests.csproj --configuration Release --collect:"XPlat Code Coverage"
 
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
