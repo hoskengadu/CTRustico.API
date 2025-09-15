@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Academia.Infrastructure": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

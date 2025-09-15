@@ -1,0 +1,54 @@
+name: CI - Build, Test and SonarQube
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-sonar:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_VERSION: '8.0.x'
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      SONAR_ORG: ${{ secrets.SONAR_ORG }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        run: dotnet restore Academia.Api/Academia.Api.csproj
+
+      - name: Build
+        run: dotnet build Academia.Api/Academia.Api.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test Academia.Tests/Academia.Tests.csproj --no-build --configuration Release --logger trx
+
+      - name: SonarQube Begin
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectKey: ${{ env.SONAR_PROJECT_KEY }}
+          organization: ${{ env.SONAR_ORG }}
+          token: ${{ env.SONAR_TOKEN }}
+          host-url: ${{ env.SONAR_HOST_URL }}
+
+      - name: SonarQube Analyze
+        run: dotnet build Academia.Api/Academia.Api.csproj --configuration Release
+
+      - name: SonarQube End
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectKey: ${{ env.SONAR_PROJECT_KEY }}
+          organization: ${{ env.SONAR_ORG }}
+          token: ${{ env.SONAR_TOKEN }}
+          host-url: ${{ env.SONAR_HOST_URL }}
+          command: end
