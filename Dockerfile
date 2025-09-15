@@ -8,6 +8,7 @@ COPY CTRustico.sln ./
 COPY Academia.Api/Academia.Api.csproj Academia.Api/
 COPY Academia.Domain/Academia.Domain.csproj Academia.Domain/
 COPY Academia.Infrastructure/Academia.Infrastructure.csproj Academia.Infrastructure/
+COPY Academia.Tests/Academia.Tests.csproj Academia.Tests/
 RUN dotnet restore CTRustico.sln
 
 # Copy everything else and build
