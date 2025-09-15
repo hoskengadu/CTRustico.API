@@ -1,0 +1,24 @@
+name: Feature/Hotfix PR Automation
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'hotfix/**'
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request to main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: ${{ github.ref_name }}
+          title: 'Auto PR: ${{ github.ref_name }} -> main'
+          body: 'Pull request automático gerado a partir da branch `${{ github.ref_name }}` para `main`.'
+          draft: false
