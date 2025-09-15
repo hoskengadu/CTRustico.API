@@ -1,4 +1,4 @@
-name: CI - Build, Test and SonarQube
+name: CI - Build, Test, SonarQube, Coverage, Docker
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-test-sonar:
+  full-pipeline:
     runs-on: ubuntu-latest
     env:
       DOTNET_VERSION: '8.0.x'
@@ -20,21 +20,33 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install dependencies
+      - name: Restore dependencies
         run: dotnet restore Academia.Api/Academia.Api.csproj
+
+      - name: Check code format
+        run: dotnet format --verify-no-changes
+
+      - name: Security audit
+        run: dotnet list package --vulnerable
 
       - name: Build
         run: dotnet build Academia.Api/Academia.Api.csproj --configuration Release --no-restore
 
+      - name: Run tests with coverage
+        run: dotnet test Academia.Tests/Academia.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
 
-      - name: Restore (antes do SonarCloud)
-        run: dotnet restore Academia.Api/Academia.Api.csproj
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
-      - name: Build (antes do SonarCloud)
-        run: dotnet build Academia.Api/Academia.Api.csproj --configuration Release --no-restore
+      - name: Convert coverage to Cobertura
+        run: reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:coveragereport
 
-      - name: Run tests
-        run: dotnet test Academia.Tests/Academia.Tests.csproj --no-build --configuration Release --logger trx
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: '**/coverage.cobertura.xml'
+          fail_ci_if_error: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
@@ -43,4 +55,5 @@ jobs:
           organization: ${{ secrets.SONAR_ORG }}
           token: ${{ secrets.SONAR_TOKEN }}
 
-  # O SonarCloud action já executa a análise e encerra automaticamente
+      - name: Build Docker image
+        run: docker build -t myapi:ci .
