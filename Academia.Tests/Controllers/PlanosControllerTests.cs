@@ -21,5 +21,27 @@ namespace Academia.Tests.Controllers
             var result = await controller.GetPlanos();
             result.Should().BeOfType<OkObjectResult>();
         }
+
+        [Fact]
+        public async Task PostPlano_ShouldReturnBadRequest_WhenModelIsInvalid()
+        {
+            var mockService = new Mock<IPlanoService>();
+            var controller = new PlanosController(mockService.Object);
+            controller.ModelState.AddModelError("Nome", "Required");
+            var result = await controller.PostPlano(null);
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task PostPlano_ShouldReturnBadRequest_WhenServiceReturnsError()
+        {
+            var mockService = new Mock<IPlanoService>();
+            mockService.Setup(s => s.CreatePlanoAsync(It.IsAny<Plano>()))
+                .ReturnsAsync((false, "Erro ao criar plano", null));
+            var controller = new PlanosController(mockService.Object);
+            var plano = new Plano { Nome = "Plano Teste" };
+            var result = await controller.PostPlano(plano);
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
     }
 }

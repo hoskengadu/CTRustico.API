@@ -70,5 +70,20 @@ namespace Academia.Tests.Services
             planos.Should().NotBeEmpty();
             planos[0].Nome.Should().Be("Plano 1");
         }
+
+        [Fact]
+        public void Plano_Properties_ShouldSetAndGetValues()
+        {
+            var plano = new Plano
+            {
+                Id = 1,
+                Nome = "Plano Teste",
+                Valor = 99.99M
+            };
+            Assert.Equal(1, plano.Id);
+            Assert.Equal("Plano Teste", plano.Nome);
+            Assert.Equal(99.99M, plano.Valor);
+            Assert.NotNull(plano.Alunos);
+        }
     }
 }

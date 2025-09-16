@@ -3,6 +3,7 @@ using Academia.Domain.Entities;
 using Academia.Infrastructure.Data;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -78,6 +79,50 @@ namespace Academia.Tests.Services
                 alunos.Should().NotBeEmpty();
                 alunos[0].Nome.Should().Be("Aluno 1");
             }
+        }
+
+        [Fact]
+        public async Task CreateAlunoAsync_ShouldReturnError_WhenAlunoAlreadyExists()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "CreateAluno_Duplicate").Options;
+            using (var context = new AcademiaDbContext(options))
+            {
+                var aluno = new Aluno { Nome = "Aluno 1", CPF = "123" };
+                context.Alunos.Add(aluno);
+                context.SaveChanges();
+
+                var service = new AlunoService(context);
+                var result = await service.CreateAlunoAsync(new Aluno { Nome = "Aluno 2", CPF = "123" });
+
+                result.Success.Should().BeFalse();
+                result.Error.Should().Be("Aluno já cadastrado.");
+            }
+        }
+
+        [Fact]
+        public void Aluno_Properties_ShouldSetAndGetValues()
+        {
+            var aluno = new Aluno
+            {
+                Id = 1,
+                Nome = "Teste",
+                CPF = "12345678900",
+                DataNascimento = new DateTime(2000, 1, 1),
+                Telefone = "11999999999",
+                Email = "teste@email.com",
+                Endereco = "Rua X",
+                PlanoId = 2
+            };
+            Assert.Equal(1, aluno.Id);
+            Assert.Equal("Teste", aluno.Nome);
+            Assert.Equal("12345678900", aluno.CPF);
+            Assert.Equal(new DateTime(2000, 1, 1), aluno.DataNascimento);
+            Assert.Equal("11999999999", aluno.Telefone);
+            Assert.Equal("teste@email.com", aluno.Email);
+            Assert.Equal("Rua X", aluno.Endereco);
+            Assert.Equal(2, aluno.PlanoId);
+            Assert.NotNull(aluno.Presencas);
         }
     }
 }

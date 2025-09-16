@@ -21,5 +21,27 @@ namespace Academia.Tests.Controllers
             var result = await controller.GetAlunos();
             result.Should().BeOfType<OkObjectResult>();
         }
+
+        [Fact]
+        public async Task PostAluno_ShouldReturnBadRequest_WhenModelIsInvalid()
+        {
+            var mockService = new Mock<IAlunoService>();
+            var controller = new AlunosController(mockService.Object);
+            controller.ModelState.AddModelError("Nome", "Required");
+            var result = await controller.PostAluno(null);
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task PostAluno_ShouldReturnBadRequest_WhenServiceReturnsError()
+        {
+            var mockService = new Mock<IAlunoService>();
+            mockService.Setup(s => s.CreateAlunoAsync(It.IsAny<Aluno>()))
+                .ReturnsAsync((false, "Erro ao criar aluno", null));
+            var controller = new AlunosController(mockService.Object);
+            var aluno = new Aluno { Nome = "Teste" };
+            var result = await controller.PostAluno(aluno);
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
     }
 }

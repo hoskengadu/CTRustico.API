@@ -21,6 +21,11 @@ namespace Academia.Api.Services
         {
             if (aluno == null)
                 return (false, "Aluno inválido.", null);
+
+            // Verifica duplicidade de CPF
+            if (await _context.Alunos.AnyAsync(a => a.CPF == aluno.CPF))
+                return (false, "Aluno já cadastrado.", null);
+
             _context.Alunos.Add(aluno);
             await _context.SaveChangesAsync();
             return (true, null, aluno);

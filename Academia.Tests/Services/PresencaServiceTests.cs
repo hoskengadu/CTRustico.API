@@ -3,6 +3,7 @@ using Academia.Domain.Entities;
 using Academia.Infrastructure.Data;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,6 +30,20 @@ namespace Academia.Tests.Services
             success.Should().BeTrue();
             createdPresenca.Should().NotBeNull();
             createdPresenca.AlunoId.Should().Be(1);
+        }
+
+        [Fact]
+        public void Presenca_Properties_ShouldSetAndGetValues()
+        {
+            var presenca = new Presenca
+            {
+                Id = 1,
+                AlunoId = 2,
+                DataPresenca = new DateTime(2023, 1, 1)
+            };
+            Assert.Equal(1, presenca.Id);
+            Assert.Equal(2, presenca.AlunoId);
+            Assert.Equal(new DateTime(2023, 1, 1), presenca.DataPresenca);
         }
     }
 }
