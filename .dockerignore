@@ -28,3 +28,12 @@ README.md
 !.git/config
 !.git/packed-refs
 !.git/refs/heads/**
+Academia.Tests/
+coveragereport/
+*.md
+*.yml
+*.yaml
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+.env

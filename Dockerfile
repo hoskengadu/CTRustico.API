@@ -24,6 +24,10 @@ COPY --from=build /app/publish .
 # Expose port 80
 EXPOSE 80
 
+# Cria usuário não-root e define permissões
+RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
+USER appuser
+
 # Set environment variables (optional, adjust as needed)
 # ENV ASPNETCORE_ENVIRONMENT=Production
 

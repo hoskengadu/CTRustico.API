@@ -45,5 +45,42 @@ namespace Academia.Tests.Services
             Assert.Equal(2, presenca.AlunoId);
             Assert.Equal(new DateTime(2023, 1, 1), presenca.DataPresenca);
         }
+
+        [Fact]
+        public async Task GetPresencasAsync_ShouldReturnEmptyList_WhenNoPresencas()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "GetPresencas_Empty").Options;
+            var service = new PresencaService(new AcademiaDbContext(options));
+            var presencas = await service.GetPresencasAsync();
+            presencas.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetPresencasAsync_ShouldReturnList_WhenPresencasExist()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "GetPresencas_WithData").Options;
+            using (var context = new AcademiaDbContext(options))
+            {
+                context.Presencas.Add(new Presenca { AlunoId = 1, DataPresenca = DateTime.Now });
+                context.SaveChanges();
+                var service = new PresencaService(context);
+                var presencas = await service.GetPresencasAsync();
+                presencas.Should().NotBeEmpty();
+            }
+        }
+
+        [Fact]
+        public async Task CreatePresencaAsync_ShouldReturnError_WhenPresencaIsNull()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "CreatePresenca_Null").Options;
+            var service = new PresencaService(new AcademiaDbContext(options));
+            var (success, error, presenca) = await service.CreatePresencaAsync(null);
+            success.Should().BeFalse();
+            error.Should().Be("Presença inválida.");
+            presenca.Should().BeNull();
+        }
     }
 }

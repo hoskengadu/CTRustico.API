@@ -29,5 +29,42 @@ namespace Academia.Tests.Services
             var result = await service.AuthenticateAsync("naoexiste@email.com", "senha");
             result.Should().BeNull();
         }
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldReturnUser_WhenCredentialsAreValid()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "Auth_ValidUser").Options;
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> {
+                {"Jwt:Key", "test-key"},
+                {"Jwt:Issuer", "test-issuer"},
+                {"Jwt:Audience", "test-audience"},
+                {"Jwt:ExpireHours", "1"}
+            }).Build();
+            using (var context = new AcademiaDbContext(options))
+            {
+                context.Usuarios.Add(new Usuario { Email = "user@email.com", SenhaHash = UsuarioService.HashPassword("123") });
+                context.SaveChanges();
+                var service = new AuthService(context, config);
+                var result = await service.AuthenticateAsync("user@email.com", "123");
+                result.Should().NotBeNull();
+                result.Email.Should().Be("user@email.com");
+            }
+        }
+
+        [Fact]
+        public void GenerateJwtToken_ShouldReturnToken()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> {
+                {"Jwt:Key", "test-key"},
+                {"Jwt:Issuer", "test-issuer"},
+                {"Jwt:Audience", "test-audience"},
+                {"Jwt:ExpireHours", "1"}
+            }).Build();
+            var usuario = new Usuario { Id = 1, Email = "user@email.com", Perfil = "Admin" };
+            var service = new AuthService(new AcademiaDbContext(new DbContextOptionsBuilder<AcademiaDbContext>().Options), config);
+            var token = service.GenerateJwtToken(usuario);
+            token.Should().NotBeNullOrEmpty();
+        }
     }
 }
