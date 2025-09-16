@@ -30,5 +30,45 @@ namespace Academia.Tests.Services
             createdPlano.Should().NotBeNull();
             createdPlano.Nome.Should().Be("Plano Teste");
         }
+
+        [Fact]
+        public async Task CreatePlanoAsync_ShouldReturnError_WhenPlanoIsNull()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "CreatePlano_Null").Options;
+            var service = GetService(options);
+
+            var (success, error, createdPlano) = await service.CreatePlanoAsync(null);
+
+            success.Should().BeFalse();
+            error.Should().Be("Plano inválido.");
+            createdPlano.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetPlanosAsync_ShouldReturnEmptyList_WhenNoPlanos()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "GetPlanos_Empty").Options;
+            var service = GetService(options);
+            var planos = await service.GetPlanosAsync();
+            planos.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetPlanosAsync_ShouldReturnList_WhenPlanosExist()
+        {
+            var options = new DbContextOptionsBuilder<AcademiaDbContext>()
+                .UseInMemoryDatabase(databaseName: "GetPlanos_WithData").Options;
+            using (var context = new AcademiaDbContext(options))
+            {
+                context.Planos.Add(new Plano { Nome = "Plano 1", Valor = 50 });
+                context.SaveChanges();
+            }
+            var service = GetService(options);
+            var planos = await service.GetPlanosAsync();
+            planos.Should().NotBeEmpty();
+            planos[0].Nome.Should().Be("Plano 1");
+        }
     }
 }

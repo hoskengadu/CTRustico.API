@@ -48,7 +48,21 @@ Esta API permite o gerenciamento de alunos, planos, presenças e usuários de um
    ```
 
 3. **Configurar a string de conexão:**
-   - Edite o arquivo `Academia.Api/appsettings.Development.json` e configure a chave `DefaultConnection` com os dados do seu SQL Server.
+    - Por segurança, **NÃO** coloque senhas reais no arquivo versionado `appsettings.json`.
+    - Recomenda-se usar variáveis de ambiente para a connection string em produção:
+       - No Windows:
+          ```powershell
+          $env:DefaultConnection="Server=localhost,1433;Database=CTRustico;User Id=ctrustico;Password=SuaSenhaAqui;TrustServerCertificate=True;"
+          ```
+       - No Linux/macOS:
+          ```bash
+          export DefaultConnection="Server=localhost,1433;Database=CTRustico;User Id=ctrustico;Password=SuaSenhaAqui;TrustServerCertificate=True;"
+          ```
+    - No arquivo `appsettings.Development.json`, use um placeholder ou deixe a senha em branco para evitar exposição:
+       ```json
+       "DefaultConnection": "Server=localhost,1433;Database=CTRustico;User Id=ctrustico;Password=__SENHA_AQUI__;TrustServerCertificate=True;"
+       ```
+    - O valor da variável de ambiente sempre sobrescreve o do arquivo.
 
 4. **Configurar as chaves JWT:**
     - No mesmo arquivo, configure a seção `Jwt`:
