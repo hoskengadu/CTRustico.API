@@ -36,7 +36,7 @@ namespace Academia.Tests.Services
             var options = new DbContextOptionsBuilder<AcademiaDbContext>()
                 .UseInMemoryDatabase(databaseName: "Auth_ValidUser").Options;
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> {
-                {"Jwt:Key", "test-key"},
+                {"Jwt:Key", "test-key-12345678-abcdef-9876543210abcd"}, // 32 chars (256 bits)
                 {"Jwt:Issuer", "test-issuer"},
                 {"Jwt:Audience", "test-audience"},
                 {"Jwt:ExpireHours", "1"}
@@ -56,7 +56,7 @@ namespace Academia.Tests.Services
         public void GenerateJwtToken_ShouldReturnToken()
         {
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> {
-                {"Jwt:Key", "test-key"},
+                {"Jwt:Key", "test-key-12345678-abcdef-9876543210abcd"}, // 32 chars (256 bits)
                 {"Jwt:Issuer", "test-issuer"},
                 {"Jwt:Audience", "test-audience"},
                 {"Jwt:ExpireHours", "1"}

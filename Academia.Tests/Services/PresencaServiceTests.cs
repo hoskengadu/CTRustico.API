@@ -61,14 +61,17 @@ namespace Academia.Tests.Services
         {
             var options = new DbContextOptionsBuilder<AcademiaDbContext>()
                 .UseInMemoryDatabase(databaseName: "GetPresencas_WithData").Options;
-            using (var context = new AcademiaDbContext(options))
-            {
-                context.Presencas.Add(new Presenca { AlunoId = 1, DataPresenca = DateTime.Now });
-                context.SaveChanges();
-                var service = new PresencaService(context);
-                var presencas = await service.GetPresencasAsync();
-                presencas.Should().NotBeEmpty();
-            }
+            // Usar o mesmo contexto e serviço durante todo o teste
+            var context = new AcademiaDbContext(options);
+            // Adiciona um aluno para garantir o relacionamento
+            var aluno = new Aluno { Nome = "Aluno Teste", CPF = "12345678900", DataNascimento = DateTime.Now.AddYears(-20), Telefone = "11999999999", Email = "aluno@teste.com", Endereco = "Rua Teste", PlanoId = 1 };
+            context.Alunos.Add(aluno);
+            context.SaveChanges();
+            context.Presencas.Add(new Presenca { AlunoId = aluno.Id, DataPresenca = DateTime.Now });
+            context.SaveChanges();
+            var service = new PresencaService(context);
+            var presencas = await service.GetPresencasAsync();
+            presencas.Should().NotBeEmpty();
         }
 
         [Fact]
